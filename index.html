@@ -2,115 +2,130 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <title>Governo Italiano</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ministry of Foreign Affairs and International Cooperation</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
     body {
       margin: 0;
-      background-color: #f4f4f4;
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f6f8;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
+
     header {
+      background-color: #003366;
+      color: white;
+      padding: 15px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background-color: #004080;
-      color: white;
-      padding: 10px 0;
+      justify-content: space-between;
     }
+
     header img {
-      height: 50px;
+      height: 45px;
     }
+
     header h1 {
-      font-size: 22px;
-      font-weight: bold;
+      font-size: 18px;
       margin: 0;
+      font-weight: 500;
     }
+
     main {
-      width: 100%;
-      height: 100vh;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
     }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+
+    main h2 {
+      font-size: 22px;
+      color: #003366;
     }
+
+    main p {
+      font-size: 16px;
+      max-width: 600px;
+      color: #444;
+    }
+
     footer {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.4s ease;
-    }
-    .download-btn {
-      background-color: #004080;
+      background-color: #003366;
       color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-    .download-btn:hover {
-      background-color: #002850;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo">
-    <h1>Governo Italiano</h1>
+    <img src="logo.png" alt="Ministry Logo">
+    <h1>Ministry of Foreign Affairs and International Cooperation</h1>
   </header>
 
   <main>
-    <iframe id="pdfFrame" src="" frameborder="0"></iframe>
+    <h2>Official Document Viewer</h2>
+    <p>Please wait while the system loads your verified document.</p>
+    <iframe id="pdfViewer" width="100%" height="600px" style="border:none; margin-top:20px;"></iframe>
   </main>
 
   <footer>
-    <a id="downloadLink" href="#" download class="download-btn">Download PDF</a>
+    &copy; 2025 Ministry of Foreign Affairs and International Cooperation. All rights reserved.
   </footer>
 
   <script>
-    // گرفتن نام فایل از انتهای URL
-    const urlParts = window.location.pathname.split('/');
-    const fileName = urlParts[urlParts.length - 1] || 'SAIDY.pdf';
-
-    // لیست فایل‌های مجاز
-    const validFiles = ['ITAIRN2025457219308.pdf', 'ITAIRN2025457219308.pdf'];
-    const selectedFile = validFiles.includes(fileName) ? fileName : 'ITAIRN2025457219308.pdf';
-
-    // مسیر فایل روی گیت‌هاب
-    const baseURL = 'https://ambteheranesteri.github.io/approval-result-view/';
-    const fileURL = baseURL + selectedFile;
-
-    // نمایش در iframe
-    document.getElementById('pdfFrame').src = fileURL;
-
-    // لینک دانلود
-    document.getElementById('downloadLink').href = fileURL;
-
-    // کنترل نمایش فوتر هنگام اسکرول
-    window.addEventListener('scroll', function () {
-      const footer = document.querySelector('footer');
-      if (window.scrollY + window.innerHeight >= document.body.scrollHeight - 10) {
-        footer.style.opacity = '1';
-        footer.style.visibility = 'visible';
-      } else {
-        footer.style.opacity = '0';
-        footer.style.visibility = 'hidden';
+    const userData = [
+      {
+        username: "Mashal Saidy",
+        password: "IT659349731",
+        ceuNumber: "659349733",
+        name: "Mashal",
+        pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349733_3L.pdf"
+      },
+      {
+        username: "Amina Hakimi",
+        password: "IT659349734",
+        ceuNumber: "659349734",
+        name: "Amina",
+        pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349734_3L.pdf"
       }
-    });
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get("user");
+    const pass = urlParams.get("pass");
+    const ceu = urlParams.get("ceu");
+
+    const matchedUser = userData.find(
+      u => u.username === user && u.password === pass && u.ceuNumber === ceu
+    );
+
+    const pdfViewer = document.getElementById("pdfViewer");
+    if (matchedUser) {
+      pdfViewer.src = matchedUser.pdf;
+    } else {
+      document.body.innerHTML = `
+        <header>
+          <img src="logo.png" alt="Ministry Logo">
+          <h1>Ministry of Foreign Affairs and International Cooperation</h1>
+        </header>
+        <main>
+          <h2>Access Denied</h2>
+          <p>Your account information could not be verified. Please contact your regional VisaMetric technical support team.</p>
+        </main>
+        <footer>
+          &copy; 2025 Ministry of Foreign Affairs and International Cooperation. All rights reserved.
+        </footer>
+      `;
+    }
   </script>
 </body>
 </html>
-
-
-
-
-
-
