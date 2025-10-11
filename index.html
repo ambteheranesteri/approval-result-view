@@ -1,150 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ministry of Foreign Affairs and International Cooperation</title>
-  <link rel="icon" type="image/png" href="logo.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure PDF Download</title>
+<link rel="icon" type="image/png" href="logo.png">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f3f5f8;
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      background-color: #002d62;
-      color: white;
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    header img {
-      height: 45px;
-    }
-
-    header h1 {
-      font-size: 18px;
-      margin: 0;
-      font-weight: 500;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    main h2 {
-      font-size: 22px;
-      color: #002d62;
-      margin-bottom: 10px;
-    }
-
-    main p {
-      font-size: 16px;
-      max-width: 600px;
-      color: #333;
-    }
-
-    iframe {
-      border: 2px solid #002d62;
-      border-radius: 6px;
-      width: 90%;
-      height: 600px;
-      margin-top: 20px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-
-    footer {
-      background-color: #002d62;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      font-size: 14px;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-    }
-
-    @media (max-width: 600px) {
-      header h1 { font-size: 16px; }
-      iframe { height: 400px; }
-    }
-  </style>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+  }
+  header {
+    background-color: #002d62;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header img {
+    height: 45px;
+  }
+  header h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  main {
+    padding: 30px;
+    text-align: center;
+  }
+  iframe {
+    width: 90%;
+    height: 500px;
+    border: 2px solid #002d62;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  footer {
+    background-color: #002d62;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+  }
+  .download-btn {
+    background-color: #ffffff;
+    color: #002d62;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-left: 10px;
+  }
+  .download-btn:hover {
+    background-color: #cddbf7;
+  }
+  /* Loading overlay */
+  #loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    display: none;
+  }
+  #loadingOverlay img {
+    width: 100px;
+    height: 100px;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Ministry Logo">
-    <h1>Ministry of Foreign Affairs and International Cooperation</h1>
-  </header>
 
-  <main>
-    <h2>Official Document Viewer</h2>
-    <p>Please wait while your verified document is being loaded.</p>
-    <iframe id="pdfViewer"></iframe>
-  </main>
+<header>
+  <img src="logo.png" alt="Logo">
+  <h1>Ministry of Foreign Affairs</h1>
+</header>
 
-  <footer>
-    &copy; 2025 Ministry of Foreign Affairs and International Cooperation. All rights reserved.
-  </footer>
+<main>
+  <h2>Official Document Viewer</h2>
+  <p>Check your document and download securely.</p>
+  <iframe id="pdfViewer"></iframe>
+</main>
 
-  <script>
-    const userData = [
-      {
-        username: "Mashal Saidy",
-        password: "IT659349731",
-        ceuNumber: "659349733",
-        name: "Mashal",
-        pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349733_3L.pdf"
-      },
-      {
-        username: "Amina Hakimi",
-        password: "IT659349734",
-        ceuNumber: "659349734",
-        name: "Amina",
-        pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349734_3L.pdf"
-      }
-    ];
+<footer>
+  &copy; 2025 Ministry of Foreign Affairs
+  <button class="download-btn" id="downloadBtn">Download PDF</button>
+</footer>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const user = urlParams.get("user");
-    const pass = urlParams.get("pass");
-    const ceu = urlParams.get("ceu");
+<!-- Loading GIF overlay -->
+<div id="loadingOverlay">
+  <img src="loading.gif" alt="Loading...">
+</div>
 
-    const matchedUser = userData.find(
-      u => u.username === user && u.password === pass && u.ceuNumber === ceu
-    );
-
-    const pdfViewer = document.getElementById("pdfViewer");
-    if (matchedUser) {
-      pdfViewer.src = matchedUser.pdf;
-    } else {
-      document.body.innerHTML = `
-        <header>
-          <img src="logo.png" alt="Ministry Logo">
-          <h1>Ministry of Foreign Affairs and International Cooperation</h1>
-        </header>
-        <main>
-          <h2>Access Denied</h2>
-          <p>Your account information could not be verified.<br>
-          Please contact your regional VisaMetric technical support team for assistance.</p>
-        </main>
-        <footer>
-          &copy; 2025 Ministry of Foreign Affairs and International Cooperation. All rights reserved.
-        </footer>
-      `;
+<script>
+  const userData = [
+    {
+      username: "Mashal Saidy",
+      password: "IT659349731",
+      ceuNumber: "659349733",
+      downloadCode: "MOFA2025",
+      pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349733_3L.pdf"
+    },
+    {
+      username: "Amina Hakimi",
+      password: "IT659349734",
+      ceuNumber: "659349734",
+      downloadCode: "AMINA2025",
+      pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349734_3L.pdf"
     }
-  </script>
+  ];
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get("user");
+  const password = urlParams.get("pass");
+  const ceu = urlParams.get("ceu");
+
+  const matchedUser = userData.find(u => 
+    u.username === username && u.password === password && u.ceuNumber === ceu
+  );
+
+  const pdfViewer = document.getElementById("pdfViewer");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+
+  function showLoading() {
+    loadingOverlay.style.display = "flex";
+    setTimeout(() => {
+      loadingOverlay.style.display = "none";
+    }, 4000);
+  }
+
+  // نمایش PDF هنگام ورود
+  if (matchedUser) {
+    showLoading();
+    setTimeout(() => {
+      pdfViewer.src = matchedUser.pdf;
+    }, 4000);
+  } else {
+    document.body.innerHTML = `
+      <header>
+        <img src="logo.png" alt="Logo">
+        <h1>Ministry of Foreign Affairs</h1>
+      </header>
+      <main>
+        <h2>Access Denied</h2>
+        <p>Your account information could not be verified.</p>
+      </main>
+      <footer>
+        &copy; 2025 Ministry of Foreign Affairs
+      </footer>
+    `;
+  }
+
+  // دانلود PDF با بررسی رمز
+  downloadBtn.addEventListener("click", () => {
+    if (!matchedUser) return;
+    showLoading();
+    setTimeout(() => {
+      const code = prompt("Enter your download code:");
+      if (code === matchedUser.downloadCode) {
+        const a = document.createElement("a");
+        a.href = matchedUser.pdf;
+        a.download = matchedUser.name + "_Document.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        alert("❌ Incorrect download code. Access denied.");
+      }
+    }, 4000);
+  });
+</script>
+
 </body>
 </html>
