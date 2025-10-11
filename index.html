@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure PDF Download</title>
+<title>Secure PDF Viewer</title>
 <link rel="icon" type="image/png" href="logo.png">
 
 <style>
@@ -102,84 +102,69 @@
   <img src="loading.gif" alt="Loading...">
 </div>
 
+<script src="data.js"></script>
 <script>
-  const userData = [
-    {
-      username: "Mashal Saidy",
-      password: "IT659349731",
-      ceuNumber: "659349733",
-      downloadCode: "MOFA2025",
-      pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349733_3L.pdf"
-    },
-    {
-      username: "Amina Hakimi",
-      password: "IT659349734",
-      ceuNumber: "659349734",
-      downloadCode: "AMINA2025",
-      pdf: "https://raw.githubusercontent.com/ambtehran-esteri-fa/show-result/main/CEUNO659349734_3L.pdf"
-    }
-  ];
+const urlParams = new URLSearchParams(window.location.search);
+const username = urlParams.get("user");
+const password = urlParams.get("pass");
+const ceu = urlParams.get("ceu");
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const username = urlParams.get("user");
-  const password = urlParams.get("pass");
-  const ceu = urlParams.get("ceu");
+const matchedUser = userData.find(u => 
+  u.username === username &&
+  u.password === password &&
+  u.ceuNumber === ceu
+);
 
-  const matchedUser = userData.find(u => 
-    u.username === username && u.password === password && u.ceuNumber === ceu
-  );
+const pdfViewer = document.getElementById("pdfViewer");
+const downloadBtn = document.getElementById("downloadBtn");
+const loadingOverlay = document.getElementById("loadingOverlay");
 
-  const pdfViewer = document.getElementById("pdfViewer");
-  const downloadBtn = document.getElementById("downloadBtn");
-  const loadingOverlay = document.getElementById("loadingOverlay");
+function showLoading(callback){
+  loadingOverlay.style.display = "flex";
+  setTimeout(() => {
+    loadingOverlay.style.display = "none";
+    if(callback) callback();
+  }, 4000);
+}
 
-  function showLoading() {
-    loadingOverlay.style.display = "flex";
-    setTimeout(() => {
-      loadingOverlay.style.display = "none";
-    }, 4000);
-  }
-
-  // نمایش PDF هنگام ورود
-  if (matchedUser) {
-    showLoading();
-    setTimeout(() => {
-      pdfViewer.src = matchedUser.pdf;
-    }, 4000);
-  } else {
-    document.body.innerHTML = `
-      <header>
-        <img src="logo.png" alt="Logo">
-        <h1>Ministry of Foreign Affairs</h1>
-      </header>
-      <main>
-        <h2>Access Denied</h2>
-        <p>Your account information could not be verified.</p>
-      </main>
-      <footer>
-        &copy; 2025 Ministry of Foreign Affairs
-      </footer>
-    `;
-  }
-
-  // دانلود PDF با بررسی رمز
-  downloadBtn.addEventListener("click", () => {
-    if (!matchedUser) return;
-    showLoading();
-    setTimeout(() => {
-      const code = prompt("Enter your download code:");
-      if (code === matchedUser.downloadCode) {
-        const a = document.createElement("a");
-        a.href = matchedUser.pdf;
-        a.download = matchedUser.name + "_Document.pdf";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
-        alert("❌ Incorrect download code. Access denied.");
-      }
-    }, 4000);
+// نمایش PDF فقط برای کاربر مطابقت داده شده
+if(matchedUser){
+  showLoading(() => {
+    pdfViewer.src = matchedUser.links.finalResult;
   });
+}else{
+  document.body.innerHTML = `
+    <header>
+      <img src="logo.png" alt="Logo">
+      <h1>Ministry of Foreign Affairs</h1>
+    </header>
+    <main>
+      <h2>Access Denied</h2>
+      <p>Your account information could not be verified.</p>
+    </main>
+    <footer>
+      &copy; 2025 Ministry of Foreign Affairs
+    </footer>
+  `;
+}
+
+// دانلود PDF با بررسی رمز
+downloadBtn.addEventListener("click", () => {
+  if(!matchedUser) return;
+  showLoading(() => {
+    const code = prompt("Enter your download code:");
+    if(code === matchedUser.downloadCode){
+      const a = document.createElement("a");
+      a.href = matchedUser.links.finalResult;
+      a.download = matchedUser.name + "_Document.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }else{
+      alert("❌ Incorrect download code. Access denied.");
+    }
+  });
+});
 </script>
 
 </body>
