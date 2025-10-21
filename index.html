@@ -6,34 +6,49 @@
 <title>PDF Viewer</title>
 <link rel="icon" type="image/png" href="logo.png">
 <style>
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
   }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
   header {
     background-color: #002d62;
     color: white;
     padding: 15px 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
   }
+
   header img {
     height: 45px;
   }
+
   main {
-    padding: 30px;
+    flex: 1; /* فضای باقی مانده را می‌گیرد */
+    width: 100%;
   }
+
   iframe {
-    width: 90%;
-    height: 500px;
-    border: 2px solid #002d62;
-    border-radius: 5px;
-    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    border: none;
   }
+
   footer {
     background-color: #002d62;
     color: white;
-    padding: 15px;
+    padding: 10px;
+    text-align: center;
   }
 </style>
 </head>
@@ -43,7 +58,6 @@
   <img src="logo.png" alt="Logo">
   <h1>Ministero degli Affari Esteri - Ambasciata d'Italia a Teheran</h1>
 </header>
-
 
 <main>
   <iframe src="ITAIRN2025659349731.pdf"></iframe>
@@ -55,5 +69,3 @@
 
 </body>
 </html>
-
-
